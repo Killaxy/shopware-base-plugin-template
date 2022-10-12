@@ -1,0 +1,66 @@
+# GitHub Actions Workflow responsible for cleaning up the IntelliJ Platform Plugin Template repository from
+# the template-specific files and configurations. This workflow is supposed to be triggered automatically
+# when a new template-based repository has been created.
+
+name: Template Cleanup
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  # Run cleaning process only if workflow is triggered by the non-JetBrains/intellij-platform-plugin-template repository.
+  template-cleanup:
+    name: Template Cleanup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: github.event.repository.name != 'shopware-base-plugin-template'
+    steps:
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v3
+
+      # Cleanup project
+      - name: Cleanup
+        run: |
+          # Prepare variables
+          repoName="${GITHUB_REPOSITORY##*/}"
+          owner=$(echo GITHUB_REPOSITORY_OWNER | tr '[:upper:]' '[:lower:]')
+          basePluginClassName = echo "$owner $repoName" | tr " " "-" | sed 's/.*/\u&/' | sed 's/-\([a-z]\)/\U\1/g'
+
+          # Replace placeholders in the template-cleanup files
+          sed -i "s/%basePluginClassName%/$basePluginClassName/g" composer.json
+          sed -i "s/%namespace%/$basePluginClassName/g" composer.json
+          sed -i "s/%owner%/$owner/g" composer.json
+          sed -i "s/%repoName%/$repoName/g" composer.json
+
+          sed -i "s/%basePluginClassName%/$basePluginClassName/g" phpunit.xml.dist
+
+          sed -i "s/%basePluginClassName%/$basePluginClassName/g" src/BaseClass.php
+          sed -i "s/%namespace%/$basePluginClassName/g" src/BaseClass.php
+
+          #Create base plugin class file and insert content
+          touch "$basePluginClassName".php
+          cat src/BaseClass.php >> "$basePluginClassName".php
+
+          # Cleanup
+          rm -rf .github/workflows/template-cleanup.yml
+          rm src/BaseClass.php
+
+      # Commit modified files
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Template cleanup"
+
+      # Push changes
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
