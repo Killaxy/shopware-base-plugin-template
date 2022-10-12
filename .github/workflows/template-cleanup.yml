@@ -27,7 +27,7 @@ jobs:
           # Prepare variables
           repoName="${GITHUB_REPOSITORY##*/}"
           owner=$(echo $GITHUB_REPOSITORY_OWNER | tr '[:upper:]' '[:lower:]')
-          basePluginClassName = $(echo "$owner $repoName" | tr " " "-" | sed 's/.*/\u&/' | sed 's/-\([a-z]\)/\U\1/g')
+          basePluginClassName=$(echo "$owner $repoName" | tr " " "-" | sed 's/.*/\u&/' | sed 's/-\([a-z]\)/\U\1/g')
 
           # Replace placeholders in the template-cleanup files
           sed -i "s/%basePluginClassName%/$basePluginClassName/g" composer.json
