@@ -41,8 +41,8 @@ jobs:
           sed -i "s/%namespace%/$basePluginClassName/g" src/BaseClass.php
 
           #Create base plugin class file and insert content
-          touch "$basePluginClassName".php
-          cat src/BaseClass.php >> "$basePluginClassName".php
+          touch src/"$basePluginClassName".php
+          cat src/BaseClass.php >> src/"$basePluginClassName".php
 
           # Cleanup
           rm -rf .github/workflows/template-cleanup.yml
