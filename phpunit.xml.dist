@@ -25,9 +25,6 @@
         <include>
             <directory suffix=".php">./src/</directory>
         </include>
-        <exclude>
-            <file>src/%basePluginClassName%.php</file>
-        </exclude>
         <report>
             <html outputDirectory="html-coverage"/>
         </report>

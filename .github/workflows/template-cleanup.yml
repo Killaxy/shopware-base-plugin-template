@@ -35,8 +35,6 @@ jobs:
           sed -i "s/%owner%/$owner/g" composer.json
           sed -i "s/%repoName%/$repoName/g" composer.json
 
-          sed -i "s/%basePluginClassName%/$basePluginClassName/g" phpunit.xml.dist
-
           sed -i "s/%basePluginClassName%/$basePluginClassName/g" src/BaseClass.php
           sed -i "s/%namespace%/$basePluginClassName/g" src/BaseClass.php
 
